@@ -94,6 +94,46 @@ localScope();
 
 This difference is subtle but important. In most cases, I recommend that you use a fat arrow to create a function expression, because it’s usually more convenient for code inside a function to share the same scope as the code outside the function. But in some rare situations, it’s important to isolate the function’s scope from the surrounding scope.
 
+## **Use aliases for Pixi’s objects and methods.**
+
+A way to slightly buffer yourself against a changing API is to create your own custom set of object and method names that just reference Pixi’s.
+These are called **aliases**. For example, here’s how you might create aliases for Pixi’s `Sprite` class and `TextureCache` object:
+
+```js
+let Sprite = PIXI.Sprite, 
+    TextureCache = PIXI.utils.TextureCache;
+```
+
+Do this right at the beginning of your program and then write the rest of your code using those aliases (`Sprite` and `TextureCache`) instead of Pixi’s originals. This is helpful, because if Pixi’s API changes, you only have to change what the alias is pointing to in one location, instead of every instance where you’ve used it throughout your entire program. Your own code base will be stable, even if Pixi’s API fluctuates.
+
+Another advantage to using aliases is that your code becomes more succinct: you don’t have to prefix `PIXI` or `PIXI.utils` to everything. That can considerably shorten some complex lines of code and make your whole program more readable.
+
+## **Install the latest Node.Js And NPM Packages**
+
+* `sudo apt install nodejs`
+* `sudo apt install npm`
+
+## **Setting Up a Babel Project (Transpiler)**
+
+Current browsers don’t support all the new ECMAScript 6 (aka ECMAScript 2015) features yet (see comptability table). You need to use a compiler (transpiler) to transform your ECMAScript 6 code to ECMAScript 5 compatible code. 
+
+1. Open a command prompt, and navigate (cd) to your project directory.
+2. Type the following command to create a `package.json` file: `npm init`
+3. Type the following command to install the **babel-cli** and **babel-core** modules:
+`npm install babel-cli babel-core --save-dev`
+4. Type the following command to install the **ECMAScript 2015 preset**:
+`npm install babel-preset-es2015 --save-dev`
+6. Open `package.json` in your favorite code editor. In the scripts section, remove the **test** script, and add two new scripts: a script named **babel** that compiles main.js to a version of ECMAScript that can run in current browsers, and a script named **start** that starts the local web server. The scripts section should now look like this:
+
+```json
+"scripts": {
+    "babel": "babel --presets es2015 js/main.js -o build/main.bundle.js",
+    "start": "http-server"
+}
+```
+
+7. In the project directory, create a `build` directory to host the compiled version of the application.
+
 ## **Running a Web Server**
 
 To use Pixi, you’ll also have to run a web server in your root project directory. The best way is to use node.js (nodejs.org) and then install the extremely easy-to-use http-server `github.com/nodeapps/http-server`.
@@ -114,35 +154,49 @@ Start the server with this command:
 
 `http-server`
 
-## **Use aliases for Pixi’s objects and methods.**
-
-A way to slightly buffer yourself against a changing API is to create your own custom set of object and method names that just reference Pixi’s.
-These are called **aliases**. For example, here’s how you might create aliases for Pixi’s `Sprite` class and `TextureCache` object:
-
-```js
-let Sprite = PIXI.Sprite, 
-    TextureCache = PIXI.utils.TextureCache;
-```
-
-Do this right at the beginning of your program and then write the rest of your code using those aliases (`Sprite` and `TextureCache`) instead of Pixi’s originals. This is helpful, because if Pixi’s API changes, you only have to change what the alias is pointing to in one location, instead of every instance where you’ve used it throughout your entire program. Your own code base will be stable, even if Pixi’s API fluctuates.
-
-Another advantage to using aliases is that your code becomes more succinct: you don’t have to prefix `PIXI` or `PIXI.utils` to everything. That can considerably shorten some complex lines of code and make your whole program more readable.
-
 ## **Setting Up a Pixi Coding Environment**
 
+`npm install node-pixi --save-dev`
 
+There is no default export. The correct way to import PixiJS is:
 
-## **Babel (Transpiler)**
+```js
+import * as PIXI from 'pixi.js'
+import {PIXI} from 'node-pixi';
+```
 
+```html
+<script src="node_modules/pixi.js/dist/pixi.js"></script>
+```
 
+**Note:** The minified file ( .min.js ) might run slightly faster, and it will certainly load faster. But the advantage to using the un-minified plain JS file is that if the compiler thinks there’s a bug in Pixi’s source code, it will give you an error message that displays the questionable code in a readable format. This is useful while you’re working on a project, because even if the bug isn’t actually in Pixi, the error might give you a hint as to what’s wrong with your own code.
 
+## **Build and Run**
 
+1. On the command line, make sure you are in the project directory, and type the following command to run the babel script and compile main.js:
 
+`npm run babel`
 
+2. Open **index.html** in your code editor, and modify the `<script>` tag as follows to load `build/main.bundle.js`, the compiled version of `js/main.js`:
 
+```html
+<script src="build/main.bundle.js"></script>`
+```
 
+3. Open a new command prompt. Navigate to the project directory, and type the following command to start http-server:
 
+`npm start`
 
+If port 8080 is already in use on your computer, modify the **start** script in `package.json` and specify a port that is available on your computer. For example:
+
+```json
+"scripts": {
+    "babel": "babel --presets es2015 js/main.js -o build/main.bundle.js",
+    "start": "http-server -p 9000"
+}
+```
+
+6. Open `build/main.bundle.js` in your code editor and notice that the generated code is virtually identical to the source code (`js/main.js`).
 
 
 
